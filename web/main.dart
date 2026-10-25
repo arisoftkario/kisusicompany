@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'dart:math' as math;
 
 import 'package:web/web.dart' as web;
@@ -137,6 +138,7 @@ void main() {
   _setupSimulator();
   _setupContactForm();
   _setupReveal();
+  _setupInstall();
 
   web.document.querySelector('#year')!.textContent = '${DateTime.now().year}';
 }
@@ -441,4 +443,84 @@ void _setupReveal() {
   for (final el in _all('.reveal')) {
     observer.observe(el);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Installation du site comme application (raccourci sur l'écran d'accueil)
+// ---------------------------------------------------------------------------
+
+/// Évènement non standard émis par Chrome/Edge/Android quand le site peut
+/// être installé.
+extension type BeforeInstallPromptEvent._(JSObject _) implements web.Event {
+  external JSPromise<JSAny?> prompt();
+}
+
+BeforeInstallPromptEvent? _installPrompt;
+
+bool get _isStandalone {
+  final navigator = web.window.navigator as JSObject;
+  return web.window.matchMedia('(display-mode: standalone)').matches ||
+      navigator.getProperty<JSAny?>('standalone'.toJS)?.dartify() == true;
+}
+
+bool get _isIos {
+  final nav = web.window.navigator;
+  return RegExp('iPhone|iPad|iPod').hasMatch(nav.userAgent) ||
+      (nav.userAgent.contains('Macintosh') && nav.maxTouchPoints > 1);
+}
+
+void _setupInstall() {
+  _registerServiceWorker();
+
+  final buttons = _all('[data-install]');
+  void showButtons(bool visible) {
+    for (final b in buttons) {
+      (b as web.HTMLElement).hidden = (!visible).toJS;
+    }
+  }
+
+  // Déjà ouvert depuis l'icône installée : inutile de proposer le bouton.
+  if (_isStandalone) return;
+  showButtons(true);
+
+  _on(web.window, 'beforeinstallprompt', (event) {
+    event.preventDefault();
+    _installPrompt = event as BeforeInstallPromptEvent;
+  });
+  _on(web.window, 'appinstalled', (_) {
+    _installPrompt = null;
+    showButtons(false);
+  });
+
+  for (final b in buttons) {
+    _on(b, 'click', (_) async {
+      final prompt = _installPrompt;
+      if (prompt != null) {
+        _installPrompt = null;
+        await prompt.prompt().toDart;
+        return;
+      }
+      _showInstallHelp();
+    });
+  }
+}
+
+/// Affiche les instructions manuelles (iPhone/iPad, ou navigateur qui ne
+/// propose pas l'installation automatique).
+void _showInstallHelp() {
+  (web.document.querySelector('#install-steps-ios') as web.HTMLElement).hidden =
+      (!_isIos).toJS;
+  (web.document.querySelector(
+    '#install-steps-other',
+  ) as web.HTMLElement).hidden = _isIos.toJS;
+  (web.document.querySelector('#install-dialog') as web.HTMLDialogElement)
+      .showModal();
+}
+
+Future<void> _registerServiceWorker() async {
+  // Indisponible hors HTTPS (sauf localhost) : le site fonctionne quand même.
+  if (!(web.window.navigator as JSObject).has('serviceWorker')) return;
+  try {
+    await web.window.navigator.serviceWorker.register('sw.js'.toJS).toDart;
+  } catch (_) {}
 }

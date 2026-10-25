@@ -1,5 +1,18 @@
 {
   "buildCommand": "echo \"Site déjà compilé localement : dart run build_runner build --release -o web:build\"",
   "outputDirectory": "build",
-  "framework": null
+  "framework": null,
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [{ "key": "Content-Type", "value": "application/manifest+json" }]
+    }
+  ]
 }

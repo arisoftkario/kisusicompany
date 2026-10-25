@@ -17,6 +17,17 @@ Site vitrine de KISUSI COMPANY (vente de véhicules et motos au comptant et à c
 - **Numéro WhatsApp** : constante `whatsappNumber` dans `web/main.dart` (et les liens `wa.me` / `tel:` dans `index.html`).
 - **Adresse / horaires** : section « Contact » de `web/index.html`.
 
+## Application installable (raccourci)
+
+Le site peut être installé sur l'écran d'accueil (bouton « Installer » dans l'en-tête et le pied de page) :
+
+- `web/manifest.webmanifest` — nom, couleurs et icônes de l'application
+- `web/sw.js` — service worker (installation + dernière version consultée disponible hors connexion).
+  Après une grosse mise à jour, changez `CACHE = 'kisusi-v1'` en `'kisusi-v2'`.
+- `web/icons/` — icônes de l'application
+
+Sur Android/Chrome/Edge, le bouton ouvre la fenêtre d'installation du navigateur ; sur iPhone, il affiche les étapes « Partager → Sur l'écran d'accueil ».
+
 ## Lancer et publier
 
 ```

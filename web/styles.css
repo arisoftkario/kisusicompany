@@ -190,9 +190,10 @@ p { margin: 0 0 1em; }
 .nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .nav a {
   position: relative;
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-size: 14.5px;
   font-weight: 500;
+  white-space: nowrap;
   color: rgba(255, 255, 255, .88);
   transition: color .2s;
 }
@@ -232,6 +233,72 @@ p { margin: 0 0 1em; }
 }
 .header.is-scrolled .burger { background: var(--soft); }
 .header.is-scrolled .burger span { background: var(--ink); }
+
+/* ---------- Bouton « Installer l'app » ---------- */
+.install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid rgba(255, 255, 255, .45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 600;
+  flex: none;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.install-btn[hidden] { display: none; }
+.install-btn svg { width: 18px; height: 18px; }
+.install-btn:hover { background: var(--white); color: var(--ink); border-color: var(--white); }
+.header.is-scrolled .install-btn, .menu-open .header .install-btn { border-color: var(--line); color: var(--ink); }
+.header.is-scrolled .install-btn:hover, .menu-open .header .install-btn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.footer__install { margin-top: 22px; }
+.footer__install[hidden] { display: none; }
+
+.install-dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 32px 28px 28px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.install-dialog::backdrop { background: rgba(11, 11, 12, .6); backdrop-filter: blur(4px); }
+.install-dialog__close-form { position: absolute; top: 10px; right: 10px; }
+.install-dialog__close {
+  width: 36px; height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+}
+.install-dialog__icon { width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 18px; box-shadow: var(--shadow); }
+.install-dialog h3 { font-family: var(--font-display); font-size: 26px; text-transform: uppercase; margin-bottom: 8px; }
+.install-dialog__lead { font-size: 15px; color: var(--muted); }
+.install-dialog__steps { list-style: none; margin: 20px 0 24px; padding: 0; display: grid; gap: 12px; text-align: left; }
+.install-dialog__steps[hidden] { display: none; }
+.install-dialog__steps li { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+.install-dialog__steps p { margin: 0; }
+.install-dialog__steps li > span {
+  width: 28px; height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+}
+.install-dialog__steps svg { width: 20px; height: 20px; vertical-align: -4px; color: #007aff; }
+.install-dialog__close:focus:not(:focus-visible) { outline: none; }
 
 /* =========================================================
    HERO
@@ -954,6 +1021,12 @@ input[type=range]::-moz-range-thumb {
 /* =========================================================
    RESPONSIVE
    ========================================================= */
+@media (max-width: 1200px) {
+  .header__inner { gap: 16px; }
+  .install-btn { width: 40px; padding: 0; justify-content: center; }
+  .install-btn span { display: none; }
+}
+
 @media (max-width: 1100px) {
   .header__cta { display: none; }
   .services { grid-template-columns: repeat(2, 1fr); }
@@ -964,7 +1037,9 @@ input[type=range]::-moz-range-thumb {
 @media (max-width: 960px) {
   :root { --header-h: 68px; }
 
-  .burger { display: flex; }
+  .burger { display: flex; margin-left: 0; }
+  .install-btn { margin-left: auto; }
+  .install-btn[hidden] ~ .burger { margin-left: auto; }
   .nav {
     position: fixed;
     top: var(--header-h); left: 0; right: 0;
@@ -1031,6 +1106,9 @@ input[type=range]::-moz-range-thumb {
   .brand__mark { width: 42px; }
   .brand__text strong { font-size: 20px; }
   .brand__text small { font-size: 9.5px; }
+  .header__inner { gap: 10px; }
+  .install-btn { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .install-btn span { display: none; }
 
   .hero { padding-bottom: 80px; }
   .hero__lead { font-size: 16.5px; }
