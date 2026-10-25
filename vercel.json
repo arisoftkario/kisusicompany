@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo \"Site déjà compilé localement : dart run build_runner build --release -o web:build\"",
+  "outputDirectory": "build",
+  "framework": null
+}
