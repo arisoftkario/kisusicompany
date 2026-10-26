@@ -1,7 +1,7 @@
 name: kisusicompany
-description: An absolute bare-bones web app.
-version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+description: Site vitrine de KISUSI COMPANY (véhicules et motos, export Japon → RD Congo).
+version: 1.1.0
+publish_to: none
 
 environment:
   sdk: ^3.13.1

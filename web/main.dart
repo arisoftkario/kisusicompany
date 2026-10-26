@@ -17,7 +17,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Toyota Tacoma 4x4',
     category: 'Pick-up',
-    image: 'pickup.jpg',
+    image: 'pickup.webp',
     year: 2018,
     km: 68000,
     fuel: 'Essence',
@@ -26,7 +26,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Toyota Camry',
     category: 'Berline',
-    image: 'berline.jpg',
+    image: 'berline.webp',
     year: 2019,
     km: 54000,
     fuel: 'Essence',
@@ -35,7 +35,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Honda CR-V',
     category: 'SUV',
-    image: 'suv.jpg',
+    image: 'suv.webp',
     year: 2018,
     km: 72000,
     fuel: 'Essence',
@@ -44,7 +44,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Nissan Juke',
     category: 'SUV',
-    image: 'suv-compact.jpg',
+    image: 'suv-compact.webp',
     year: 2017,
     km: 61000,
     fuel: 'Essence',
@@ -53,7 +53,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Ford Expedition',
     category: 'SUV',
-    image: 'suv-grand.jpg',
+    image: 'suv-grand.webp',
     year: 2018,
     km: 80000,
     fuel: 'Essence',
@@ -63,7 +63,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'BMW Série 4 Coupé',
     category: 'Berline',
-    image: 'coupe.jpg',
+    image: 'coupe.webp',
     year: 2017,
     km: 66000,
     fuel: 'Essence',
@@ -73,7 +73,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'KTM RC 390',
     category: 'Moto',
-    image: 'moto-sport.jpg',
+    image: 'moto-sport.webp',
     year: 2020,
     km: 9000,
     fuel: 'Essence',
@@ -83,7 +83,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Ducati SuperSport',
     category: 'Moto',
-    image: 'moto-route.jpg',
+    image: 'moto-route.webp',
     year: 2019,
     km: 12000,
     fuel: 'Essence',
@@ -93,7 +93,7 @@ const vehicles = <Vehicle>[
   Vehicle(
     name: 'Moto Cruiser 250 cc',
     category: 'Moto',
-    image: 'moto-cruiser.jpg',
+    image: 'moto-cruiser.webp',
     year: 2021,
     km: 6000,
     fuel: 'Essence',
@@ -234,6 +234,7 @@ void _setupCatalog() {
       _currentFilter = chip.getAttribute('data-filter') ?? 'Tous';
       for (final c in chips) {
         c.classList.toggle('is-active', c == chip);
+        c.setAttribute('aria-pressed', '${c == chip}');
       }
       _renderCatalog();
     });
@@ -260,7 +261,7 @@ void _renderCatalog() {
   <div class="card__media">
     <img src="images/${v.image}" alt="${_escape(v.name)}" loading="lazy">
     <span class="card__cat">${v.category}</span>
-    ${v.fromJapan ? '<span class="card__origin"><svg class="flag" viewBox="0 0 30 20"><use href="#f-jp"/></svg>Import Japon</span>' : ''}
+    ${v.fromJapan ? '<span class="card__origin"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><use href="#f-jp"/></svg>Import Japon</span>' : ''}
   </div>
   <div class="card__body">
     <div class="card__pay">
@@ -269,15 +270,15 @@ void _renderCatalog() {
     </div>
     <h3 class="card__title">${_escape(v.name)}</h3>
     <ul class="card__specs">
-      <li><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg>${v.year}</li>
-      <li><svg viewBox="0 0 24 24"><use href="#i-gauge"/></svg>${_fmt(v.km)} km</li>
-      <li><svg viewBox="0 0 24 24"><use href="#i-fuel"/></svg>${v.fuel}</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg>${v.year}</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"/></svg>${_fmt(v.km)} km</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fuel"/></svg>${v.fuel}</li>
     </ul>
     <div class="card__foot">
       <div class="card__price"><small>Prix</small><strong>${_usd(v.price)}</strong></div>
       <div class="card__actions">
-        ${v.credit ? '<button class="icon-btn" data-simulate="$index" title="Simuler un crédit" aria-label="Simuler un crédit pour ${_escape(v.name)}"><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg></button>' : ''}
-        <a class="icon-btn icon-btn--wa" href="${_whatsappLink(message)}" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander ${_escape(v.name)} sur WhatsApp"><svg viewBox="0 0 24 24"><use href="#i-whatsapp"/></svg></a>
+        ${v.credit ? '<button type="button" class="icon-btn" data-simulate="$index" title="Simuler un crédit" aria-label="Simuler un crédit pour ${_escape(v.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></button>' : ''}
+        <a class="icon-btn icon-btn--wa" href="${_whatsappLink(message)}" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander ${_escape(v.name)} sur WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
       </div>
     </div>
   </div>
@@ -317,6 +318,7 @@ void _setupSimulator() {
       _simMonths = int.parse(b.getAttribute('data-months')!);
       for (final d in durations) {
         d.classList.toggle('is-active', d == b);
+        d.setAttribute('aria-pressed', '${d == b}');
       }
       _updateSimulator();
     });

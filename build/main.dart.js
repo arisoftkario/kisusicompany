@@ -1820,7 +1820,7 @@ g=A.z(g,"<",a1)
 g=A.z(g,">",a2)
 g=A.z(g,'"',a3)
 f=o.b
-e=o.y?'<span class="card__origin"><svg class="flag" viewBox="0 0 30 20"><use href="#f-jp"/></svg>Import Japon</span>':""
+e=o.y?'<span class="card__origin"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><use href="#f-jp"/></svg>Import Japon</span>':""
 d=A.z(m,"&",a0)
 d=A.z(d,"<",a1)
 d=A.z(d,">",a2)
@@ -1830,12 +1830,12 @@ k=A.a0(k)
 c=A.z(m,"&",a0)
 c=A.z(c,"<",a1)
 c=A.z(c,">",a2)
-c='<button class="icon-btn" data-simulate="'+n+'" title="Simuler un cr\xe9dit" aria-label="Simuler un cr\xe9dit pour '+A.z(c,'"',a3)+'"><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg></button>'
+c='<button type="button" class="icon-btn" data-simulate="'+n+'" title="Simuler un cr\xe9dit" aria-label="Simuler un cr\xe9dit pour '+A.z(c,'"',a3)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></button>'
 j=A.dD(2,'Bonjour KISUSI COMPANY, je suis int\xe9ress\xe9(e) par le v\xe9hicule "'+m+'" ('+l+") affich\xe9 \xe0 "+(j+" $")+" sur votre site. Est-il toujours disponible ?",B.f,!1)
 m=A.z(m,"&",a0)
 m=A.z(m,"<",a1)
 m=A.z(m,">",a2)
-p+='<article class="card" style="animation-delay:'+q*70+'ms">\n  <div class="card__media">\n    <img src="images/'+h+'" alt="'+g+'" loading="lazy">\n    <span class="card__cat">'+f+"</span>\n    "+e+'\n  </div>\n  <div class="card__body">\n    <div class="card__pay">\n      <span>Cash</span>\n      <span class="is-credit">Cr\xe9dit</span>\n    </div>\n    <h3 class="card__title">'+d+'</h3>\n    <ul class="card__specs">\n      <li><svg viewBox="0 0 24 24"><use href="#i-calendar"/></svg>'+l+'</li>\n      <li><svg viewBox="0 0 24 24"><use href="#i-gauge"/></svg>'+o+' km</li>\n      <li><svg viewBox="0 0 24 24"><use href="#i-fuel"/></svg>Essence</li>\n    </ul>\n    <div class="card__foot">\n      <div class="card__price"><small>Prix</small><strong>'+(k+" $")+'</strong></div>\n      <div class="card__actions">\n        '+c+'\n        <a class="icon-btn icon-btn--wa" href="'+("https://wa.me/243980957817?text="+j)+'" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander '+A.z(m,'"',a3)+' sur WhatsApp"><svg viewBox="0 0 24 24"><use href="#i-whatsapp"/></svg></a>\n      </div>\n    </div>\n  </div>\n</article>'}a4.innerHTML=p.charCodeAt(0)==0?p:p
+p+='<article class="card" style="animation-delay:'+q*70+'ms">\n  <div class="card__media">\n    <img src="images/'+h+'" alt="'+g+'" loading="lazy">\n    <span class="card__cat">'+f+"</span>\n    "+e+'\n  </div>\n  <div class="card__body">\n    <div class="card__pay">\n      <span>Cash</span>\n      <span class="is-credit">Cr\xe9dit</span>\n    </div>\n    <h3 class="card__title">'+d+'</h3>\n    <ul class="card__specs">\n      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg>'+l+'</li>\n      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"/></svg>'+o+' km</li>\n      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fuel"/></svg>Essence</li>\n    </ul>\n    <div class="card__foot">\n      <div class="card__price"><small>Prix</small><strong>'+(k+" $")+'</strong></div>\n      <div class="card__actions">\n        '+c+'\n        <a class="icon-btn icon-btn--wa" href="'+("https://wa.me/243980957817?text="+j)+'" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander '+A.z(m,'"',a3)+' sur WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>\n      </div>\n    </div>\n  </div>\n</article>'}a4.innerHTML=p.charCodeAt(0)==0?p:p
 for(a4=A.a8("#catalog [data-simulate]"),s=a4.length,b=0;b<a4.length;a4.length===s||(0,A.K)(a4),++b){a=a4[b]
 a.addEventListener("click",A.G(new A.cQ(a)))}},
 hT(){var s,r,q,p=v.G,o=A.j(A.a(p.document).querySelector("#sim-price"))
@@ -2995,13 +2995,15 @@ $1(a){A.a(a)
 if(A.J(A.a(v.G.window).innerWidth)>960)this.a.$0()},
 $S:1}
 A.cS.prototype={
-$1(a){var s,r,q,p,o
+$1(a){var s,r,q,p,o,n
 A.a(a)
 s=this.a
 r=A.bh(s.getAttribute("data-filter"))
 $.eC=r==null?"Tous":r
 for(r=this.b,q=r.length,p=0;p<r.length;r.length===q||(0,A.K)(r),++p){o=r[p]
-A.a_(A.a(o.classList).toggle("is-active",o===s))}A.eM()},
+n=o===s
+A.a_(A.a(o.classList).toggle("is-active",n))
+o.setAttribute("aria-pressed",""+n)}A.eM()},
 $S:1}
 A.cP.prototype={
 $1(a){var s
@@ -3037,14 +3039,16 @@ $1(a){A.a(a)
 return A.c7()},
 $S:1}
 A.d6.prototype={
-$1(a){var s,r,q,p,o
+$1(a){var s,r,q,p,o,n
 A.a(a)
 s=this.a
 r=A.bh(s.getAttribute("data-months"))
 r.toString
 $.dI=A.dP(r)
 for(r=this.b,q=r.length,p=0;p<r.length;r.length===q||(0,A.K)(r),++p){o=r[p]
-A.a_(A.a(o.classList).toggle("is-active",o===s))}A.c7()},
+n=o===s
+A.a_(A.a(o.classList).toggle("is-active",n))
+o.setAttribute("aria-pressed",""+n)}A.c7()},
 $S:1}
 A.cT.prototype={
 $1(a){var s,r,q,p,o,n,m,l,k=this
@@ -3301,16 +3305,16 @@ B.f=new A.bX()
 B.u=new A.cl()
 B.b=new A.c2()
 B.h=new A.c4()
-B.M=new A.x("Toyota Tacoma 4x4","Pick-up","pickup.jpg",2018,68e3,24500,!0)
-B.L=new A.x("Toyota Camry","Berline","berline.jpg",2019,54e3,16800,!0)
-B.R=new A.x("Honda CR-V","SUV","suv.jpg",2018,72e3,15500,!0)
-B.S=new A.x("Nissan Juke","SUV","suv-compact.jpg",2017,61e3,9900,!0)
-B.P=new A.x("Ford Expedition","SUV","suv-grand.jpg",2018,8e4,29e3,!1)
-B.T=new A.x("BMW S\xe9rie 4 Coup\xe9","Berline","coupe.jpg",2017,66e3,21500,!1)
-B.O=new A.x("KTM RC 390","Moto","moto-sport.jpg",2020,9000,4200,!1)
-B.Q=new A.x("Ducati SuperSport","Moto","moto-route.jpg",2019,12e3,9800,!1)
-B.N=new A.x("Moto Cruiser 250 cc","Moto","moto-cruiser.jpg",2021,6000,2900,!0)
-B.i=s([B.M,B.L,B.R,B.S,B.P,B.T,B.O,B.Q,B.N],A.dc("q<x>"))
+B.T=new A.x("Toyota Tacoma 4x4","Pick-up","pickup.webp",2018,68e3,24500,!0)
+B.S=new A.x("Toyota Camry","Berline","berline.webp",2019,54e3,16800,!0)
+B.R=new A.x("Honda CR-V","SUV","suv.webp",2018,72e3,15500,!0)
+B.Q=new A.x("Nissan Juke","SUV","suv-compact.webp",2017,61e3,9900,!0)
+B.P=new A.x("Ford Expedition","SUV","suv-grand.webp",2018,8e4,29e3,!1)
+B.O=new A.x("BMW S\xe9rie 4 Coup\xe9","Berline","coupe.webp",2017,66e3,21500,!1)
+B.L=new A.x("KTM RC 390","Moto","moto-sport.webp",2020,9000,4200,!1)
+B.M=new A.x("Ducati SuperSport","Moto","moto-route.webp",2019,12e3,9800,!1)
+B.N=new A.x("Moto Cruiser 250 cc","Moto","moto-cruiser.webp",2021,6000,2900,!0)
+B.i=s([B.T,B.S,B.R,B.Q,B.P,B.O,B.L,B.M,B.N],A.dc("q<x>"))
 B.z=A.L("ip")
 B.A=A.L("iq")
 B.B=A.L("fr")

@@ -1,7 +1,7 @@
 // Service worker KISUSI COMPANY : permet l'installation du site et
 // l'affichage de la dernière version consultée hors connexion.
 // Stratégie « réseau d'abord » : le contenu en ligne est toujours prioritaire.
-const CACHE = 'kisusi-v1';
+const CACHE = 'kisusi-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -32,6 +32,9 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(request).then((cached) => cached || caches.match('index.html')))
+      // Hors connexion : version en cache, et la page d'accueil seulement pour
+      // une navigation (pas à la place d'une image ou d'un script manquant).
+      .catch(() => caches.match(request).then((cached) =>
+        cached || (request.mode === 'navigate' ? caches.match('index.html') : Response.error())))
   );
 });

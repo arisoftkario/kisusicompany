@@ -11,7 +11,12 @@
   <meta property="og:description" content="Véhicules et motos au comptant et à crédit, importés directement du Japon vers la RD Congo.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kisusicompany.vercel.app/">
-  <meta property="og:image" content="https://kisusicompany.vercel.app/images/logo-export.jpg">
+  <meta property="og:image" content="https://kisusicompany.vercel.app/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="KISUSI COMPANY — Export &amp; Logistics">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="KISUSI COMPANY">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://kisusicompany.vercel.app/">
   <link rel="icon" type="image/png" href="favicon.png">
@@ -24,8 +29,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Saira+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="images/hero.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <script defer src="main.dart.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    "name": "KISUSI COMPANY",
+    "alternateName": "KISUSI COMPANY Export & Logistics",
+    "slogan": "Your car belongs to you",
+    "description": "Vente de véhicules et motos au comptant et à crédit, importation directe du Japon vers la RD Congo.",
+    "url": "https://kisusicompany.vercel.app/",
+    "logo": "https://kisusicompany.vercel.app/icons/icon-512.png",
+    "image": "https://kisusicompany.vercel.app/images/og-image.jpg",
+    "telephone": "+243980957817",
+    "priceRange": "$$",
+    "currenciesAccepted": "USD",
+    "areaServed": { "@type": "Country", "name": "République démocratique du Congo" },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Kinshasa",
+      "addressCountry": "CD"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "08:00",
+      "closes": "18:00"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+243980957817",
+      "contactType": "customer service",
+      "availableLanguage": ["French"]
+    }
+  }
+  </script>
 </head>
 
 <body>
@@ -149,12 +189,12 @@
             <p class="eyebrow"><span class="dot"></span> Catalogue</p>
             <h2 class="section__title">Véhicules &amp; <span>motos disponibles</span></h2>
           </div>
-          <div class="filters" id="filters" role="tablist" aria-label="Filtrer le catalogue">
-            <button class="chip is-active" data-filter="Tous">Tous</button>
-            <button class="chip" data-filter="SUV">SUV</button>
-            <button class="chip" data-filter="Berline">Berlines</button>
-            <button class="chip" data-filter="Pick-up">Pick-up</button>
-            <button class="chip" data-filter="Moto">Motos</button>
+          <div class="filters" id="filters" role="group" aria-label="Filtrer le catalogue">
+            <button type="button" class="chip is-active" data-filter="Tous" aria-pressed="true">Tous</button>
+            <button type="button" class="chip" data-filter="SUV" aria-pressed="false">SUV</button>
+            <button type="button" class="chip" data-filter="Berline" aria-pressed="false">Berlines</button>
+            <button type="button" class="chip" data-filter="Pick-up" aria-pressed="false">Pick-up</button>
+            <button type="button" class="chip" data-filter="Moto" aria-pressed="false">Motos</button>
           </div>
         </div>
 
@@ -203,12 +243,12 @@
 
           <div class="field">
             <span class="field__label">Durée de remboursement</span>
-            <div class="durations" id="sim-durations">
-              <button data-months="3">3 mois</button>
-              <button data-months="6">6 mois</button>
-              <button data-months="12" class="is-active">12 mois</button>
-              <button data-months="18">18 mois</button>
-              <button data-months="24">24 mois</button>
+            <div class="durations" id="sim-durations" role="group" aria-label="Durée de remboursement">
+              <button type="button" data-months="3" aria-pressed="false">3 mois</button>
+              <button type="button" data-months="6" aria-pressed="false">6 mois</button>
+              <button type="button" data-months="12" class="is-active" aria-pressed="true">12 mois</button>
+              <button type="button" data-months="18" aria-pressed="false">18 mois</button>
+              <button type="button" data-months="24" aria-pressed="false">24 mois</button>
             </div>
           </div>
 
@@ -232,7 +272,7 @@
       <div class="container">
         <div class="import">
           <div class="import__media reveal">
-            <img src="images/port.jpg" alt="Porte-conteneurs dans un port" loading="lazy">
+            <img src="images/port.webp" alt="Porte-conteneurs dans un port" loading="lazy">
             <div class="import__route">
               <div><small>Départ</small><strong><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><use href="#f-jp"/></svg> Japon</strong></div>
               <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-ship"/></svg>
@@ -261,8 +301,8 @@
     <section class="section section--soft" id="apropos">
       <div class="container about">
         <div class="about__logos reveal">
-          <div class="about__logo about__logo--main"><img src="images/logo-kisusi.jpg" alt="Logo KISUSI COMPANY" loading="lazy"></div>
-          <div class="about__logo about__logo--sub"><img src="images/logo-export.jpg" alt="Logo KISUSI COMPANY Export & Logistics" loading="lazy"></div>
+          <div class="about__logo about__logo--main"><img src="images/logo-kisusi.webp" alt="Logo KISUSI COMPANY" loading="lazy"></div>
+          <div class="about__logo about__logo--sub"><img src="images/logo-export.webp" alt="Logo KISUSI COMPANY Export & Logistics" loading="lazy"></div>
         </div>
         <div class="about__text reveal">
           <p class="eyebrow"><span class="dot"></span> À propos</p>
