@@ -9,5 +9,10 @@
   "dependencies": {
     "@vercel/blob": "^2.8.2",
     "firebase-admin": "^14.5.0"
+  },
+  "overrides": {
+    "jwks-rsa": {
+      "jose": "^5.10.0"
+    }
   }
 }
