@@ -4,7 +4,7 @@
   "description": "Fonctions Vercel du site KISUSI COMPANY (photos, notifications, partage des actualités).",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",
