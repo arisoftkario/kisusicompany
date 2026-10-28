@@ -195,6 +195,8 @@ void _setupHeader() {
     // Lien actif selon la section visible.
     var current = '';
     for (final s in sections) {
+      // Section masquée (ex. « Actualités » sans Firebase) : offsetTop vaut 0.
+      if (s.hasAttribute('hidden')) continue;
       final top = (s as web.HTMLElement).offsetTop;
       if (y + 140 >= top) current = s.id;
     }

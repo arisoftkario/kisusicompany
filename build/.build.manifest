@@ -1,4 +1,5 @@
 .dart_tool/package_config.json
+admin.html
 favicon.png
 icons/apple-touch-icon.png
 icons/icon-192.png
@@ -21,6 +22,10 @@ images/suv-compact.webp
 images/suv-grand.webp
 images/suv.webp
 index.html
+js/actus.js
+js/admin.js
+js/firebase-config.js
+js/firebase.js
 main.dart.js
 manifest.webmanifest
 packages/$sdk/dev_compiler/amd/require.js

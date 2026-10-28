@@ -4,3 +4,8 @@
 
 # Fichiers internes de build_runner, inutiles en ligne
 build/packages/
+
+# Fonctions Vercel
+node_modules/
+.vercel/
+.env*

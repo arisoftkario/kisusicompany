@@ -2,6 +2,9 @@
   "buildCommand": "echo \"Site déjà compilé localement : dart run build_runner build --release -o web:build\"",
   "outputDirectory": "build",
   "framework": null,
+  "rewrites": [
+    { "source": "/actu/:id", "destination": "/api/actu?id=:id" }
+  ],
   "headers": [
     {
       "source": "/sw.js",
@@ -13,6 +16,10 @@
     {
       "source": "/manifest.webmanifest",
       "headers": [{ "key": "Content-Type", "value": "application/manifest+json" }]
+    },
+    {
+      "source": "/admin.html",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ]
 }

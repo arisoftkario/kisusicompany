@@ -1,0 +1,70 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore du site KISUSI COMPANY.
+// À coller dans la console Firebase : Firestore Database → Règles → Publier.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    // Les documents des visiteurs ne contiennent qu'une date, posée par le serveur.
+    function onlyTimestamp() {
+      return request.resource.data.keys().hasOnly(['at']) && request.resource.data.at == request.time;
+    }
+
+    // Administrateurs : créés à la main dans la console (document admins/{uid}).
+    match /admins/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // Publications : lisibles par tous, gérées par les administrateurs.
+    match /posts/{postId} {
+      function validPost() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['title', 'text', 'price', 'imageUrl', 'createdAt', 'updatedAt', 'notifiedAt'])
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 120
+          && d.text is string && d.text.size() > 0 && d.text.size() <= 3000
+          && (d.price == null || (d.price is number && d.price >= 0))
+          && d.imageUrl is string && d.imageUrl.size() <= 500
+          && d.updatedAt == request.time;
+      }
+
+      allow read: if true;
+      allow create: if isAdmin() && validPost()
+        && request.resource.data.createdAt == request.time
+        && !('notifiedAt' in request.resource.data);
+      allow update: if isAdmin() && validPost()
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.get('notifiedAt', null) == resource.data.get('notifiedAt', null);
+      allow delete: if isAdmin();
+
+      // « J'aime » : un document par visiteur (connexion anonyme automatique).
+      match /likes/{uid} {
+        allow read: if true;
+        allow create, update: if isOwner(uid) && onlyTimestamp();
+        allow delete: if isOwner(uid) || isAdmin();
+      }
+    }
+
+    // Abonnés : le nombre est public, chacun gère son propre abonnement.
+    match /follows/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid) && onlyTimestamp();
+      allow delete: if isOwner(uid);
+    }
+
+    // Jetons de notification : jamais lisibles depuis le site (seul le serveur les lit).
+    match /pushTokens/{uid} {
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['token', 'at'])
+        && request.resource.data.token is string && request.resource.data.token.size() < 4096
+        && request.resource.data.at == request.time;
+      allow delete: if isOwner(uid);
+      allow read: if false;
+    }
+  }
+}

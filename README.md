@@ -20,13 +20,23 @@ Site vitrine de KISUSI COMPANY (vente de véhicules et motos au comptant et à c
 - **Numéro WhatsApp** : constante `whatsappNumber` dans `web/main.dart` (et les liens `wa.me` / `tel:` dans `index.html`).
 - **Adresse / horaires** : section « Contact » de `web/index.html`.
 
+## Actualités et espace administrateur
+
+Publicités publiées depuis `admin.html` (publier, modifier, supprimer), avec likes,
+partage et abonnement aux notifications. Mise en service : voir **[FIREBASE.md](FIREBASE.md)**.
+
+- `web/js/firebase-config.js` — clés Firebase (section masquée tant qu'elles sont vides)
+- `web/js/actus.js` — section « Actualités » du site ; `web/js/admin.js` — espace administrateur
+- `api/` — fonctions Vercel : photos (`media.js`), notifications (`notify.js`), aperçu de partage (`actu.js`)
+- `firestore.rules` — règles de sécurité à coller dans la console Firebase
+
 ## Application installable (raccourci)
 
 Le site peut être installé sur l'écran d'accueil (bouton « Installer » dans l'en-tête et le pied de page) :
 
 - `web/manifest.webmanifest` — nom, couleurs et icônes de l'application
 - `web/sw.js` — service worker (installation + dernière version consultée disponible hors connexion).
-  Après une grosse mise à jour, augmentez le numéro dans `CACHE = 'kisusi-v2'` (v3, v4…).
+  Après une grosse mise à jour, augmentez le numéro dans `CACHE = 'kisusi-v4'` (v5, v6…).
 - `web/icons/` — icônes de l'application
 
 Sur Android/Chrome/Edge, le bouton ouvre la fenêtre d'installation du navigateur ; sur iPhone, il affiche les étapes « Partager → Sur l'écran d'accueil ».

@@ -1,0 +1,13 @@
+{
+  "name": "kisusicompany-api",
+  "private": true,
+  "description": "Fonctions Vercel du site KISUSI COMPANY (photos, notifications, partage des actualités).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.2",
+    "firebase-admin": "^14.5.0"
+  }
+}
