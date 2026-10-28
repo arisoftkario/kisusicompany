@@ -1,7 +1,9 @@
 // GET /actu/<id> (réécrit vers /api/actu?id=<id> par vercel.json)
-// Page de partage d'une publication : WhatsApp et Facebook y lisent le titre,
-// le texte et la photo pour l'aperçu, puis le visiteur est redirigé sur le site.
+// Page de partage d'une publication marketing ou d'un produit : WhatsApp et
+// Facebook y lisent le titre, le texte et la photo pour l'aperçu, puis le
+// visiteur est redirigé sur le site.
 import { db } from '../server/firebase-admin.js';
+import { productLine } from './notify.js';
 
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -9,22 +11,30 @@ const escape = (s) => String(s).replace(/[&<>"']/g, (c) =>
 export async function GET(request) {
   const url = new URL(request.url);
   const id = url.searchParams.get('id') ?? '';
-  const target = `/?actu=${encodeURIComponent(id)}#actus`;
 
-  let post = null;
+  let snap = null;
+  let product = false;
   if (/^[A-Za-z0-9]{1,64}$/.test(id)) {
     try {
-      const snap = await db().doc(`posts/${id}`).get();
-      if (snap.exists) post = snap.data();
+      snap = await db().doc(`posts/${id}`).get();
+      if (!snap.exists) {
+        snap = await db().doc(`products/${id}`).get();
+        product = true;
+      }
     } catch (err) {
       console.error(err);
     }
   }
-  if (!post) return Response.redirect(`${url.origin}/#actus`, 302);
+  if (!snap?.exists) return Response.redirect(`${url.origin}/#actus`, 302);
 
-  const text = post.text ?? '';
+  const post = snap.data();
+  const target = product
+    ? `/?produit=${encodeURIComponent(id)}#catalogue`
+    : `/?actu=${encodeURIComponent(id)}#actus`;
+  const text = product ? [productLine(snap), post.text].filter(Boolean).join(' — ') : post.text ?? '';
   const description = text.length > 200 ? `${text.slice(0, 197)}…` : text;
-  const image = post.imageUrl || `${url.origin}/images/og-image.jpg`;
+  const photo = (post.media ?? []).find((m) => m.kind === 'image');
+  const image = photo?.url || `${url.origin}/images/og-image.jpg`;
   const html = `<!DOCTYPE html>
 <html lang="fr">
 <head>

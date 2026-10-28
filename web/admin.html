@@ -55,34 +55,93 @@
     <!-- ============ TABLEAU DE BORD ============ -->
     <div id="dashboard" hidden>
       <div class="admin__stats">
-        <div class="stat"><strong id="stat-posts">–</strong><span>Publications</span></div>
+        <div class="stat"><strong id="stat-posts">–</strong><span>Publications marketing</span></div>
+        <div class="stat"><strong id="stat-products">–</strong><span>Produits en vente</span></div>
         <div class="stat"><strong id="stat-likes">–</strong><span>J'aime au total</span></div>
         <div class="stat"><strong id="stat-followers">–</strong><span>Abonnés</span></div>
+        <div class="stat stat--alert"><strong id="stat-orders">–</strong><span>Réservations à traiter</span></div>
       </div>
+
+      <section class="admin__card admin__orders">
+        <h2>Réservations en ligne</h2>
+        <div id="order-list"><p class="admin__empty">Chargement…</p></div>
+      </section>
 
       <div class="admin__grid">
         <form class="admin__card" id="post-form" novalidate>
           <h2 id="form-title">Nouvelle publication</h2>
+
+          <fieldset class="choice" id="type-row">
+            <legend class="field__label">Type de publication</legend>
+            <label><input type="radio" name="type" value="contenu" checked> Publication marketing <small>Photos ou vidéo de remise, nouveautés → « Actualités »</small></label>
+            <label><input type="radio" name="type" value="produit"> Produit en vente <small>Moto ou véhicule disponible → « Catalogue »</small></label>
+          </fieldset>
+
           <label class="field">
-            <span class="field__label">Titre *</span>
-            <input type="text" id="post-title" maxlength="120" required placeholder="Ex. : Toyota RAV4 2019 disponible à Beni">
+            <span class="field__label" id="title-label">Titre *</span>
+            <input type="text" id="post-title" maxlength="120" required>
           </label>
-          <label class="field">
-            <span class="field__label">Texte *</span>
-            <textarea id="post-text" maxlength="3000" rows="6" required placeholder="Description, conditions de paiement, lieu…"></textarea>
-          </label>
-          <label class="field">
-            <span class="field__label">Prix en USD (facultatif)</span>
-            <input type="number" id="post-price" min="0" step="1" inputmode="numeric">
-          </label>
-          <label class="field">
-            <span class="field__label">Photo</span>
-            <input type="file" id="post-image" accept="image/*">
-          </label>
-          <div class="admin__preview" id="post-preview" hidden>
-            <img alt="Aperçu de la photo">
-            <button type="button" class="admin__link" id="remove-image">Retirer la photo</button>
+
+          <div class="admin__product" data-for="produit" hidden>
+            <div class="admin__row">
+              <label class="field">
+                <span class="field__label">Catégorie *</span>
+                <select id="post-category">
+                  <option>SUV</option>
+                  <option>Berline</option>
+                  <option>Pick-up</option>
+                  <option>Moto</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label">Prix en USD *</span>
+                <input type="number" id="post-price" min="1" step="1" inputmode="numeric">
+              </label>
+            </div>
+            <div class="admin__row">
+              <label class="field">
+                <span class="field__label">Année</span>
+                <input type="number" id="post-year" min="1980" max="2100" step="1" inputmode="numeric">
+              </label>
+              <label class="field">
+                <span class="field__label">Kilométrage</span>
+                <input type="number" id="post-km" min="0" step="1" inputmode="numeric">
+              </label>
+            </div>
+            <label class="field">
+              <span class="field__label">Carburant</span>
+              <select id="post-fuel">
+                <option>Essence</option>
+                <option>Diesel</option>
+                <option>Hybride</option>
+                <option>Électrique</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" id="post-credit" checked> Vente à crédit possible</label>
+            <label class="check"><input type="checkbox" id="post-japan"> Importé du Japon</label>
+            <label class="check"><input type="checkbox" id="post-sold"> Vendu (reste affiché avec la mention « Vendu »)</label>
           </div>
+
+          <label class="field">
+            <span class="field__label" id="text-label">Texte *</span>
+            <textarea id="post-text" maxlength="3000" rows="6"></textarea>
+          </label>
+
+          <div class="field">
+            <span class="field__label">Photos <small id="media-hint">(jusqu'à 6)</small></span>
+            <div class="admin__media" id="media-list"></div>
+            <div class="admin__media-add">
+              <label class="btn btn--outline btn--sm">
+                Ajouter des photos
+                <input type="file" id="add-photos" accept="image/*" multiple hidden>
+              </label>
+              <label class="btn btn--outline btn--sm" data-for="contenu">
+                Ajouter une vidéo
+                <input type="file" id="add-video" accept="video/mp4,video/webm,video/quicktime" hidden>
+              </label>
+            </div>
+          </div>
+
           <label class="check" id="notify-row">
             <input type="checkbox" id="post-notify" checked>
             Envoyer une notification aux abonnés
@@ -94,6 +153,11 @@
 
         <section class="admin__card">
           <h2>Publications</h2>
+          <div class="filters admin__tabs" id="list-tabs" role="group" aria-label="Filtrer les publications">
+            <button type="button" class="chip is-active" data-tab="tout" aria-pressed="true">Tout</button>
+            <button type="button" class="chip" data-tab="contenu" aria-pressed="false">Marketing</button>
+            <button type="button" class="chip" data-tab="produit" aria-pressed="false">Produits</button>
+          </div>
           <div id="post-list"><p class="admin__empty">Chargement…</p></div>
         </section>
       </div>

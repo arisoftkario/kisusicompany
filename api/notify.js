@@ -1,5 +1,6 @@
-// POST /api/notify { postId } : envoie une notification à tous les abonnés
-// pour une nouvelle publication (une seule fois par publication).
+// POST /api/notify { postId, collection } : envoie une notification à tous
+// les abonnés pour une nouvelle publication marketing (« posts ») ou un
+// nouveau produit en vente (« products »), une seule fois par publication.
 import { FieldValue } from 'firebase-admin/firestore';
 import { HttpError, db, handle, messaging, requireAdmin } from '../server/firebase-admin.js';
 
@@ -10,24 +11,40 @@ const DEAD_TOKEN = new Set([
   'messaging/invalid-argument',
 ]);
 
+const usd = (n) => `${Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} $`;
+
+/// « 24 500 $ · 2019 · 54 000 km · Crédit possible »
+export function productLine(p) {
+  return [
+    usd(p.get('price') ?? 0),
+    p.get('year'),
+    p.get('km') != null && `${usd(p.get('km')).slice(0, -2)} km`,
+    p.get('credit') && 'Crédit possible',
+  ].filter(Boolean).join(' · ');
+}
+
 export function POST(request) {
   return handle(async () => {
     await requireAdmin(request);
-    const { postId } = await request.json().catch(() => ({}));
+    const { postId, collection = 'posts' } = await request.json().catch(() => ({}));
     if (typeof postId !== 'string' || !postId) throw new HttpError(400, 'postId manquant');
+    if (!['posts', 'products'].includes(collection)) throw new HttpError(400, 'collection invalide');
+    const product = collection === 'products';
 
-    const postRef = db().doc(`posts/${postId}`);
+    const postRef = db().doc(`${collection}/${postId}`);
     const post = await postRef.get();
     if (!post.exists) throw new HttpError(404, 'Publication introuvable');
     if (post.get('notifiedAt')) return { sent: 0, already: true };
 
-    const text = post.get('text') ?? '';
+    const text = product ? productLine(post) : post.get('text') ?? '';
+    const photo = (post.get('media') ?? []).find((m) => m.kind === 'image');
+    const origin = new URL(request.url).origin;
     const data = {
-      title: post.get('title') ?? 'KISUSI COMPANY',
+      title: product ? `Disponible : ${post.get('title')}` : post.get('title') ?? 'KISUSI COMPANY',
       body: text.length > 140 ? `${text.slice(0, 137)}…` : text,
-      image: post.get('imageUrl') ?? '',
-      url: `${new URL(request.url).origin}/?actu=${postId}#actus`,
-      tag: `actu-${postId}`,
+      image: photo?.url ?? '',
+      url: product ? `${origin}/?produit=${postId}#catalogue` : `${origin}/?actu=${postId}#actus`,
+      tag: `${product ? 'produit' : 'actu'}-${postId}`,
     };
 
     const tokens = (await db().collection('pushTokens').get()).docs

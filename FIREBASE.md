@@ -77,11 +77,17 @@ variables d'environnement ajoutées).
 
 ## Utilisation au quotidien
 
-- **Publier** : ouvrez `https://kisusicompany.vercel.app/admin.html` (lien
-  « Espace administrateur » en bas du site), connectez-vous, remplissez le
-  formulaire. La case « Envoyer une notification aux abonnés » prévient tous
-  ceux qui suivent les actus.
+- **Publier** : ouvrez `https://kisusicompany.vercel.app/admin.html` (bouton
+  « Admin » dans le menu du site), connectez-vous, choisissez le type :
+  - **Publication marketing** : texte + jusqu'à 6 photos, ou une vidéo (100 Mo
+    maximum, de préférence MP4 en 720p) → section « Actualités » ;
+  - **Produit en vente** : nom, prix, catégorie, photos… → « Catalogue », avec
+    le bouton « Réserver en ligne ». Cochez « Vendu » une fois le véhicule vendu.
+  La case « Envoyer une notification aux abonnés » prévient tous ceux qui suivent les actus.
 - **Modifier / Supprimer** : boutons à côté de chaque publication.
+- **Réservations** : les réservations faites depuis le catalogue apparaissent en haut
+  de l'espace administrateur. Appelez ou écrivez au client, puis changez le statut
+  (Confirmée → Acompte payé → Livrée).
 - **Partage** : chaque publication a un lien `https://kisusicompany.vercel.app/actu/…`
   qui affiche sa photo et son titre dans l'aperçu WhatsApp/Facebook.
 

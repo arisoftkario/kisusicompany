@@ -20,15 +20,29 @@ Site vitrine de KISUSI COMPANY (vente de véhicules et motos au comptant et à c
 - **Numéro WhatsApp** : constante `whatsappNumber` dans `web/main.dart` (et les liens `wa.me` / `tel:` dans `index.html`).
 - **Adresse / horaires** : section « Contact » de `web/index.html`.
 
-## Actualités et espace administrateur
+## Publications et espace administrateur
 
-Publicités publiées depuis `admin.html` (publier, modifier, supprimer), avec likes,
-partage et abonnement aux notifications. Mise en service : voir **[FIREBASE.md](FIREBASE.md)**.
+Deux types de publication, gérés depuis `admin.html` (publier, modifier, supprimer) :
 
-- `web/js/firebase-config.js` — clés Firebase (section masquée tant qu'elles sont vides)
-- `web/js/actus.js` — section « Actualités » du site ; `web/js/admin.js` — espace administrateur
-- `api/` — fonctions Vercel : photos (`media.js`), notifications (`notify.js`), aperçu de partage (`actu.js`)
+1. **Publication marketing** (collection `posts`) — texte + photos ou vidéo de remise,
+   affichée dans « Actualités » avec likes, partage et notifications.
+2. **Produit en vente** (collection `products`) — moto ou véhicule : prix, année,
+   kilométrage, photos, crédit, « Vendu ». Affiché dans le « Catalogue » avec
+   « Réserver en ligne » ; il remplace les véhicules d'exemple de `web/main.dart`.
+
+Mise en service : voir **[FIREBASE.md](FIREBASE.md)**.
+
+- `web/js/firebase-config.js` — clés Firebase (sections masquées tant qu'elles sont vides)
+- `web/js/actus.js` — « Actualités » ; `web/js/catalog.js` — produits du catalogue ; `web/js/admin.js` — espace administrateur
+- `api/` — fonctions Vercel : photos et vidéos (`media.js`), notifications (`notify.js`), aperçu de partage (`actu.js`)
 - `firestore.rules` — règles de sécurité à coller dans la console Firebase
+
+## Réservation en ligne
+
+Bouton « Réserver en ligne » sur chaque véhicule du catalogue (`web/js/orders.js`) :
+le client choisit comptant/crédit et le paiement de l'acompte (Mobile Money ou agence).
+Acompte : constante `DEPOSIT_RATE` (10 %). Les réservations s'affichent dans `admin.html`
+(statut, appel, WhatsApp) ; sans Firebase, elles sont envoyées sur WhatsApp.
 
 ## Application installable (raccourci)
 
@@ -36,7 +50,7 @@ Le site peut être installé sur l'écran d'accueil (bouton « Installer » dans
 
 - `web/manifest.webmanifest` — nom, couleurs et icônes de l'application
 - `web/sw.js` — service worker (installation + dernière version consultée disponible hors connexion).
-  Après une grosse mise à jour, augmentez le numéro dans `CACHE = 'kisusi-v4'` (v5, v6…).
+  Après une grosse mise à jour, augmentez le numéro dans `CACHE = 'kisusi-v5'` (v6, v7…).
 - `web/icons/` — icônes de l'application
 
 Sur Android/Chrome/Edge, le bouton ouvre la fenêtre d'installation du navigateur ; sur iPhone, il affiche les étapes « Partager → Sur l'écran d'accueil ».

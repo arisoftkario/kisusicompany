@@ -32,7 +32,9 @@
   <link rel="preload" as="image" href="images/hero.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
   <script defer src="main.dart.js"></script>
+  <script type="module" src="js/catalog.js"></script>
   <script type="module" src="js/actus.js"></script>
+  <script type="module" src="js/orders.js"></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -109,6 +111,7 @@
         <a href="#import">Import Japon</a>
         <a href="#apropos">À propos</a>
         <a href="#contact">Contact</a>
+        <a href="admin.html" class="nav__admin" rel="nofollow">Admin</a>
         <a href="tel:+243980957817" class="nav__phone">+243 980 957 817</a>
       </nav>
 
@@ -355,24 +358,23 @@
           <p class="eyebrow"><span class="dot"></span> À propos</p>
           <h2 class="section__title">Votre satisfaction, <span>notre priorité</span></h2>
           <p>
+            <strong>KISUSI COMPANY</strong> est une entreprise commerciale spécialisée dans la vente de véhicules et de motos
+            en RD Congo. Grâce à notre activité d'<strong>export &amp; logistique</strong>, nous importons directement du Japon
+            des véhicules fiables, à des prix accessibles.
+          </p>
+          <p>
+            Que vous soyez un particulier, un chauffeur de taxi ou une entreprise, nous vous proposons des solutions
+            <strong>au comptant</strong> ou <strong>à crédit</strong>, avec un accompagnement personnalisé du début à la fin.
+          </p>
+          <p>
             <strong>KISUSI COMPANY SARL</strong> a été fondée le 19 mars 2025 à Butembo (Nord-Kivu) et est dirigée par
             <strong>KATEMBO KAMUHA GEDEON</strong>. Elle sert des clients dans toute la RD Congo et ambitionne de s'étendre
             à l'échelle africaine.
           </p>
-          <ul class="about__tags" aria-label="Domaines d'activité">
-            <li>Logistique &amp; livraison</li>
-            <li>Import &amp; vente de véhicules</li>
-            <li>Crédit moto</li>
-            <li>Immobilier</li>
-          </ul>
           <ul class="values">
             <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg><div><strong>Fiabilité</strong><span>Véhicules contrôlés et documents en règle.</span></div></li>
             <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-eye"/></svg><div><strong>Transparence</strong><span>Prix clairs, sans frais cachés.</span></div></li>
             <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg><div><strong>Proximité</strong><span>Un conseiller dédié, joignable sur WhatsApp.</span></div></li>
-          </ul>
-          <ul class="values values--places" aria-label="Nos implantations">
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin"/></svg><div><strong>Siège social — Butembo</strong><span>Commune de Kimemi, quartier Lumumba, avenue Ruwenzori n° 47</span></div></li>
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pin"/></svg><div><strong>Agence — Beni</strong><span>Commune de Ruwenzori, quartier Kasabinyole, secteur de Mupanda, près du rond-point Calvaire</span></div></li>
           </ul>
         </div>
       </div>
@@ -547,6 +549,68 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-facebook"/></svg> Facebook</a>
       <button type="button" class="btn btn--outline btn--block" data-share="copy">
         <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-link"/></svg> <span>Copier le lien</span></button>
+    </div>
+  </dialog>
+
+  <!-- Réservation en ligne d'un véhicule (js/orders.js) -->
+  <dialog class="install-dialog order-dialog" id="order-dialog" aria-labelledby="order-title">
+    <form method="dialog" class="install-dialog__close-form">
+      <button class="install-dialog__close" aria-label="Fermer">&times;</button>
+    </form>
+    <h3 id="order-title">Réserver en ligne</h3>
+    <div class="order-summary">
+      <strong id="order-vehicle"></strong>
+      <dl>
+        <div><dt>Prix</dt><dd id="order-price"></dd></div>
+        <div><dt>Acompte à la réservation</dt><dd id="order-deposit"></dd></div>
+      </dl>
+      <p>Le reste est réglé à la livraison (ou en mensualités pour un achat à crédit).</p>
+    </div>
+
+    <form id="order-form" novalidate>
+      <label class="field">
+        <span class="field__label">Nom complet *</span>
+        <input type="text" name="name" maxlength="100" required autocomplete="name">
+      </label>
+      <label class="field">
+        <span class="field__label">Téléphone (WhatsApp) *</span>
+        <input type="tel" name="phone" maxlength="30" required autocomplete="tel" inputmode="tel" placeholder="+243 …">
+      </label>
+      <label class="field">
+        <span class="field__label">Ville</span>
+        <select name="city">
+          <option>Butembo</option>
+          <option>Beni</option>
+          <option>Goma</option>
+          <option>Bunia</option>
+          <option>Kinshasa</option>
+          <option>Autre ville</option>
+        </select>
+      </label>
+      <fieldset class="choice">
+        <legend class="field__label">Mode d'achat</legend>
+        <label><input type="radio" name="mode" value="comptant" checked> Comptant</label>
+        <label><input type="radio" name="mode" value="credit"> À crédit</label>
+      </fieldset>
+      <fieldset class="choice">
+        <legend class="field__label">Paiement de l'acompte</legend>
+        <label><input type="radio" name="payment" value="mobile-money" checked> Mobile Money <small>M-Pesa, Airtel Money, Orange Money</small></label>
+        <label><input type="radio" name="payment" value="agence"> À l'agence <small>Butembo ou Beni</small></label>
+      </fieldset>
+      <label class="field">
+        <span class="field__label">Message (facultatif)</span>
+        <textarea name="note" maxlength="1000" rows="3" placeholder="Couleur souhaitée, date de livraison, questions…"></textarea>
+      </label>
+      <p class="order-msg" id="order-msg" role="alert" hidden></p>
+      <button type="submit" class="btn btn--red btn--block">Envoyer ma réservation</button>
+    </form>
+
+    <div class="order-done" id="order-done" hidden>
+      <p class="order-done__title" id="order-done-title"></p>
+      <p id="order-done-text"></p>
+      <p id="order-done-pay"></p>
+      <a class="btn btn--block share-list__wa" id="order-wa" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-whatsapp"/></svg> <span>Envoyer sur WhatsApp</span></a>
     </div>
   </dialog>
 

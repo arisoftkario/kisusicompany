@@ -11,8 +11,9 @@ const whatsappNumber = '243980957817';
 /// À ajuster selon les conditions réelles de l'entreprise.
 const tauxMensuelCredit = 0.015;
 
-/// Catalogue affiché sur le site. Pour ajouter un véhicule, ajoutez une
-/// entrée ici et placez sa photo dans `web/images/`.
+/// Véhicules d'exemple du catalogue. Dès qu'un produit est publié depuis
+/// l'espace administrateur (admin.html), les produits publiés les remplacent
+/// (voir `web/js/catalog.js`).
 const vehicles = <Vehicle>[
   Vehicle(
     name: 'Toyota Tacoma 4x4',
@@ -102,6 +103,8 @@ const vehicles = <Vehicle>[
 ];
 
 class Vehicle {
+  /// Identifiant du produit publié ('' pour les véhicules d'exemple).
+  final String id;
   final String name;
   final String category;
   final String image;
@@ -112,8 +115,14 @@ class Vehicle {
   final bool cash;
   final bool credit;
   final bool fromJapan;
+  final bool sold;
+  final String description;
+
+  /// Photos supplémentaires (adresses complètes), après [image].
+  final List<String> photos;
 
   const Vehicle({
+    this.id = '',
     required this.name,
     required this.category,
     required this.image,
@@ -124,8 +133,40 @@ class Vehicle {
     this.cash = true,
     this.credit = true,
     this.fromJapan = true,
+    this.sold = false,
+    this.description = '',
+    this.photos = const [],
   });
+
+  /// Produit publié depuis l'espace administrateur (objet préparé par catalog.js).
+  factory Vehicle.fromJs(JSObject o) {
+    JSAny? get(String key) => o.getProperty<JSAny?>(key.toJS);
+    String text(String key) => (get(key) as JSString?)?.toDart ?? '';
+    int number(String key) => (get(key) as JSNumber?)?.toDartDouble.round() ?? 0;
+    bool flag(String key) => (get(key) as JSBoolean?)?.toDart ?? false;
+    final photos = [
+      for (final p in (get('photos') as JSArray<JSString>?)?.toDart ?? <JSString>[]) p.toDart,
+    ];
+    return Vehicle(
+      id: text('id'),
+      name: text('name'),
+      category: text('category'),
+      image: photos.isEmpty ? 'og-image.jpg' : photos.first,
+      photos: photos.skip(1).toList(),
+      year: number('year'),
+      km: number('km'),
+      fuel: text('fuel'),
+      price: number('price'),
+      credit: flag('credit'),
+      fromJapan: flag('fromJapan'),
+      sold: flag('sold'),
+      description: text('description'),
+    );
+  }
 }
+
+/// Catalogue affiché : exemples, ou produits publiés.
+List<Vehicle> _vehicles = vehicles;
 
 String _currentFilter = 'Tous';
 int _simMonths = 12;
@@ -135,6 +176,7 @@ void main() {
 
   _setupHeader();
   _setupCatalog();
+  _listenForProducts();
   _setupSimulator();
   _setupContactForm();
   _setupReveal();
@@ -170,6 +212,9 @@ String _usd(num value) => '${_fmt(value)} \$';
 
 String _whatsappLink(String message) =>
     'https://wa.me/$whatsappNumber?text=${Uri.encodeComponent(message)}';
+
+/// Photo locale (web/images/) ou adresse complète (photo publiée).
+String _src(String image) => image.startsWith('http') ? image : 'images/$image';
 
 String _escape(String s) => s
     .replaceAll('&', '&amp;')
@@ -244,25 +289,40 @@ void _setupCatalog() {
   _renderCatalog();
 }
 
+/// Produits publiés, envoyés par catalog.js (événement, ou déjà prêts).
+void _listenForProducts() {
+  void apply(JSAny? detail) {
+    if (detail == null || detail.isUndefinedOrNull) return;
+    final list = (detail as JSArray<JSObject>).toDart;
+    if (list.isEmpty) return;
+    _vehicles = [for (final p in list) Vehicle.fromJs(p)];
+    _renderCatalog();
+  }
+
+  _on(web.window, 'kisusi:products', (e) => apply((e as web.CustomEvent).detail));
+  apply(web.window.getProperty<JSAny?>('kisusiProducts'.toJS));
+}
+
 void _renderCatalog() {
   final container = web.document.querySelector('#catalog')!;
-  final items = vehicles.where(
+  final items = _vehicles.where(
     (v) => _currentFilter == 'Tous' || v.category == _currentFilter,
   );
 
   final html = StringBuffer();
   var i = 0;
   for (final v in items) {
-    final index = vehicles.indexOf(v);
+    final index = _vehicles.indexOf(v);
     final message =
         'Bonjour KISUSI COMPANY, je suis intéressé(e) par le '
         'véhicule "${v.name}" (${v.year}) affiché à ${_usd(v.price)} '
         'sur votre site. Est-il toujours disponible ?';
     html.write('''
-<article class="card" style="animation-delay:${i++ * 70}ms">
+<article class="card${v.sold ? ' is-sold' : ''}"${v.id.isEmpty ? '' : ' id="produit-${_escape(v.id)}"'} style="animation-delay:${i++ * 70}ms">
   <div class="card__media">
-    <img src="images/${v.image}" alt="${_escape(v.name)}" loading="lazy">
-    <span class="card__cat">${v.category}</span>
+    ${v.photos.isEmpty ? '<img src="${_escape(_src(v.image))}" alt="${_escape(v.name)}" loading="lazy">' : '<div class="card__slides">${[v.image, ...v.photos].map((p) => '<img src="${_escape(_src(p))}" alt="${_escape(v.name)}" loading="lazy">').join()}</div><span class="card__count">${v.photos.length + 1} photos ›</span>'}
+    <span class="card__cat">${_escape(v.category)}</span>
+    ${v.sold ? '<span class="card__sold">Vendu</span>' : ''}
     ${v.fromJapan ? '<span class="card__origin"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><use href="#f-jp"/></svg>Import Japon</span>' : ''}
   </div>
   <div class="card__body">
@@ -271,18 +331,20 @@ void _renderCatalog() {
       ${v.credit ? '<span class="is-credit">Crédit</span>' : ''}
     </div>
     <h3 class="card__title">${_escape(v.name)}</h3>
+    ${v.description.isEmpty ? '' : '<p class="card__desc">${_escape(v.description)}</p>'}
     <ul class="card__specs">
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg>${v.year}</li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gauge"/></svg>${_fmt(v.km)} km</li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fuel"/></svg>${v.fuel}</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fuel"/></svg>${_escape(v.fuel)}</li>
     </ul>
     <div class="card__foot">
       <div class="card__price"><small>Prix</small><strong>${_usd(v.price)}</strong></div>
       <div class="card__actions">
-        ${v.credit ? '<button type="button" class="icon-btn" data-simulate="$index" title="Simuler un crédit" aria-label="Simuler un crédit pour ${_escape(v.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></button>' : ''}
+        ${v.credit && !v.sold ? '<button type="button" class="icon-btn" data-simulate="$index" title="Simuler un crédit" aria-label="Simuler un crédit pour ${_escape(v.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></button>' : ''}
         <a class="icon-btn icon-btn--wa" href="${_whatsappLink(message)}" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander ${_escape(v.name)} sur WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
       </div>
     </div>
+    ${v.sold ? '' : '<button type="button" class="btn btn--red btn--sm btn--block card__order" data-order="${_escape(v.name)}" data-year="${v.year}" data-price="${v.price}" data-credit="${v.credit}">Réserver en ligne</button>'}
   </div>
 </article>''');
   }
@@ -290,7 +352,7 @@ void _renderCatalog() {
 
   for (final btn in _all('#catalog [data-simulate]')) {
     _on(btn, 'click', (_) {
-      final v = vehicles[int.parse(btn.getAttribute('data-simulate')!)];
+      final v = _vehicles[int.parse(btn.getAttribute('data-simulate')!)];
       _selectVehicleForCredit(v);
     });
   }

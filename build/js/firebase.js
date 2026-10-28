@@ -22,6 +22,12 @@ export function firebase() {
   return ready;
 }
 
+/// Visiteur connecté (connexion anonyme automatique, sans compte).
+export async function signedInUser({ auth, A }) {
+  await auth.authStateReady();
+  return auth.currentUser ?? (await A.signInAnonymously(auth)).user;
+}
+
 /// Module Firebase Cloud Messaging (notifications), chargé à la demande.
 export const loadMessaging = () => import(cdn('messaging'));
 

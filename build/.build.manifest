@@ -24,8 +24,10 @@ images/suv.webp
 index.html
 js/actus.js
 js/admin.js
+js/catalog.js
 js/firebase-config.js
 js/firebase.js
+js/orders.js
 main.dart.js
 manifest.webmanifest
 packages/$sdk/dev_compiler/amd/require.js

@@ -1,7 +1,9 @@
-// Section « Actualités » : publications de KISUSI COMPANY, likes (sans compte,
-// un par appareil), partage et abonnement aux notifications.
+// Section « Actualités » : publications marketing de KISUSI COMPANY (photos
+// et vidéos de remise, nouveautés), likes (sans compte, un par appareil),
+// partage et abonnement aux notifications. Les produits en vente sont
+// affichés dans le catalogue (catalog.js).
 import { isConfigured, vapidKey } from './firebase-config.js';
-import { firebase, loadMessaging, PAGE_SIZE, usd, dateFr, el, icon } from './firebase.js';
+import { firebase, signedInUser, loadMessaging, PAGE_SIZE, dateFr, el, icon } from './firebase.js';
 
 const WHATSAPP = '243980957817';
 const SEEN_KEY = 'kisusi-actus-vu';
@@ -58,11 +60,7 @@ async function start() {
   }
 }
 
-async function ensureUser() {
-  const { auth, A } = fb;
-  await auth.authStateReady();
-  return auth.currentUser ?? (await A.signInAnonymously(auth)).user;
-}
+const ensureUser = () => signedInUser(fb);
 
 // ---------------------------------------------------------------------------
 // Publications
@@ -111,8 +109,7 @@ function addPost(snap, prepend = false) {
   }, icon('i-share'));
 
   const card = el('article', { class: 'card post', id: `actu-${snap.id}` },
-    p.imageUrl && el('div', { class: 'card__media' },
-      el('img', { src: p.imageUrl, alt: p.title, loading: 'lazy' })),
+    media(p),
     el('div', { class: 'card__body' },
       el('div', { class: 'post__meta' },
         el('time', { datetime: new Date(created).toISOString(), text: dateFr(p.createdAt) }),
@@ -121,9 +118,7 @@ function addPost(snap, prepend = false) {
       text,
       readMore,
       el('div', { class: 'card__foot' },
-        p.price != null
-          ? el('div', { class: 'card__price' }, el('small', { text: 'Prix' }), el('strong', { text: usd(p.price) }))
-          : el('span'),
+        el('span'),
         el('div', { class: 'card__actions' },
           likeBtn,
           shareBtn,
@@ -148,6 +143,24 @@ function addPost(snap, prepend = false) {
   likeBtn.addEventListener('click', () => toggleLike(snap.id, likeBtn));
   shareBtn.addEventListener('click', () => share(p.title, url));
   loadLikes(snap.id, likeBtn);
+}
+
+/// Vidéo, ou photo(s) de la publication (défilement si plusieurs).
+function media(p) {
+  const items = p.media ?? [];
+  const video = items.find((m) => m.kind === 'video');
+  if (video) {
+    const poster = items.find((m) => m.kind === 'image');
+    return el('div', { class: 'card__media card__media--video' },
+      el('video', { src: video.url, poster: poster?.url, controls: true, playsinline: true, preload: 'metadata' }));
+  }
+  const photos = items.filter((m) => m.kind === 'image');
+  if (!photos.length) return null;
+  const imgs = photos.map((m, i) => el('img', { src: m.url, alt: i ? '' : p.title, loading: 'lazy' }));
+  if (photos.length === 1) return el('div', { class: 'card__media' }, ...imgs);
+  return el('div', { class: 'card__media' },
+    el('div', { class: 'card__slides' }, ...imgs),
+    el('span', { class: 'card__count', text: `${photos.length} photos ›` }));
 }
 
 /// Lien reçu par notification ou partage : /?actu=<id> (ou #actu-<id>).

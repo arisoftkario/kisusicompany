@@ -2,7 +2,7 @@
 // l'affichage de la dernière version consultée hors connexion et
 // les notifications des nouvelles publications.
 // Stratégie « réseau d'abord » : le contenu en ligne est toujours prioritaire.
-const CACHE = 'kisusi-v4';
+const CACHE = 'kisusi-v5';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

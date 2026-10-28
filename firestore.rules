@@ -21,25 +21,32 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Publications : lisibles par tous, gérées par les administrateurs.
+    // Champs communs aux deux types de publication (photos/vidéos dans « media »).
+    function validCommon(d, textMin) {
+      return d.title is string && d.title.size() > 0 && d.title.size() <= 120
+        && d.text is string && d.text.size() >= textMin && d.text.size() <= 3000
+        && d.media is list && d.media.size() <= 7
+        && d.updatedAt == request.time;
+    }
+    // createdAt posé par le serveur à la création, puis inchangé ;
+    // notifiedAt réservé au serveur (api/notify.js).
+    function validDates() {
+      return resource == null
+        ? request.resource.data.createdAt == request.time && !('notifiedAt' in request.resource.data)
+        : request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.get('notifiedAt', null) == resource.data.get('notifiedAt', null);
+    }
+
+    // Publications marketing (« Actualités ») : lisibles par tous, gérées par les administrateurs.
     match /posts/{postId} {
       function validPost() {
         let d = request.resource.data;
-        return d.keys().hasOnly(['title', 'text', 'price', 'imageUrl', 'createdAt', 'updatedAt', 'notifiedAt'])
-          && d.title is string && d.title.size() > 0 && d.title.size() <= 120
-          && d.text is string && d.text.size() > 0 && d.text.size() <= 3000
-          && (d.price == null || (d.price is number && d.price >= 0))
-          && d.imageUrl is string && d.imageUrl.size() <= 500
-          && d.updatedAt == request.time;
+        return d.keys().hasOnly(['title', 'text', 'media', 'createdAt', 'updatedAt', 'notifiedAt'])
+          && validCommon(d, 1);
       }
 
       allow read: if true;
-      allow create: if isAdmin() && validPost()
-        && request.resource.data.createdAt == request.time
-        && !('notifiedAt' in request.resource.data);
-      allow update: if isAdmin() && validPost()
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.get('notifiedAt', null) == resource.data.get('notifiedAt', null);
+      allow create, update: if isAdmin() && validPost() && validDates();
       allow delete: if isAdmin();
 
       // « J'aime » : un document par visiteur (connexion anonyme automatique).
@@ -50,11 +57,58 @@ service cloud.firestore {
       }
     }
 
+    // Produits en vente (« Catalogue ») : lisibles par tous, gérés par les administrateurs.
+    match /products/{productId} {
+      function validProduct() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['title', 'text', 'media', 'category', 'price', 'year', 'km', 'fuel',
+                                 'credit', 'fromJapan', 'sold', 'createdAt', 'updatedAt', 'notifiedAt'])
+          && validCommon(d, 0)
+          && d.category in ['SUV', 'Berline', 'Pick-up', 'Moto']
+          && d.price is number && d.price > 0
+          && (d.year == null || d.year is number)
+          && (d.km == null || (d.km is number && d.km >= 0))
+          && d.fuel is string && d.fuel.size() <= 30
+          && d.credit is bool && d.fromJapan is bool && d.sold is bool;
+      }
+
+      allow read: if true;
+      allow create, update: if isAdmin() && validProduct() && validDates();
+      allow delete: if isAdmin();
+    }
+
     // Abonnés : le nombre est public, chacun gère son propre abonnement.
     match /follows/{uid} {
       allow read: if true;
       allow create, update: if isOwner(uid) && onlyTimestamp();
       allow delete: if isOwner(uid);
+    }
+
+    // Réservations en ligne : n'importe quel visiteur en crée une (connexion
+    // anonyme), seuls les administrateurs les lisent et changent leur statut.
+    match /orders/{orderId} {
+      function validOrder() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['vehicle', 'price', 'deposit', 'name', 'phone', 'city', 'mode', 'payment', 'note', 'uid', 'status', 'createdAt'])
+          && d.vehicle is string && d.vehicle.size() > 0 && d.vehicle.size() <= 150
+          && d.price is number && d.price > 0
+          && d.deposit is number && d.deposit >= 0 && d.deposit <= d.price
+          && d.name is string && d.name.size() >= 2 && d.name.size() <= 100
+          && d.phone is string && d.phone.size() >= 6 && d.phone.size() <= 30
+          && d.city is string && d.city.size() <= 60
+          && d.mode in ['comptant', 'credit']
+          && d.payment in ['mobile-money', 'agence']
+          && d.note is string && d.note.size() <= 1000;
+      }
+
+      allow create: if signedIn() && validOrder()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'nouvelle'
+        && request.resource.data.createdAt == request.time;
+      allow read, delete: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status in ['nouvelle', 'confirmee', 'acompte', 'livree', 'annulee'];
     }
 
     // Jetons de notification : jamais lisibles depuis le site (seul le serveur les lit).
