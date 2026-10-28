@@ -562,9 +562,9 @@
       <strong id="order-vehicle"></strong>
       <dl>
         <div><dt>Prix</dt><dd id="order-price"></dd></div>
-        <div><dt>Acompte à la réservation</dt><dd id="order-deposit"></dd></div>
+        <div><dt>Avance à la réservation</dt><dd id="order-deposit"></dd></div>
       </dl>
-      <p>Le reste est réglé à la livraison (ou en mensualités pour un achat à crédit).</p>
+      <p id="order-rest"></p>
     </div>
 
     <form id="order-form" novalidate>
@@ -587,15 +587,22 @@
           <option>Autre ville</option>
         </select>
       </label>
+      <fieldset class="choice" id="order-agency">
+        <legend class="field__label">Agence KISUSI *</legend>
+        <label><input type="radio" name="agency" value="Butembo"> Butembo <small>Siège · av. Ruwenzori n° 47, Kimemi</small></label>
+        <label><input type="radio" name="agency" value="Beni"> Beni <small>Agence · près du rond-point Calvaire</small></label>
+      </fieldset>
       <fieldset class="choice">
         <legend class="field__label">Mode d'achat</legend>
         <label><input type="radio" name="mode" value="comptant" checked> Comptant</label>
         <label><input type="radio" name="mode" value="credit"> À crédit</label>
       </fieldset>
-      <fieldset class="choice">
-        <legend class="field__label">Paiement de l'acompte</legend>
-        <label><input type="radio" name="payment" value="mobile-money" checked> Mobile Money <small>M-Pesa, Airtel Money, Orange Money</small></label>
-        <label><input type="radio" name="payment" value="agence"> À l'agence <small>Butembo ou Beni</small></label>
+      <fieldset class="choice choice--pay" id="order-payment">
+        <legend class="field__label">Mode de paiement de l'avance *</legend>
+        <label><input type="radio" name="payment" value="airtel-money"> Airtel Money</label>
+        <label><input type="radio" name="payment" value="orange-money"> Orange Money</label>
+        <label><input type="radio" name="payment" value="m-pesa"> M-Pesa</label>
+        <label><input type="radio" name="payment" value="virement"> Virement bancaire</label>
       </fieldset>
       <label class="field">
         <span class="field__label">Message (facultatif)</span>

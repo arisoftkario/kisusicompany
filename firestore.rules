@@ -61,11 +61,12 @@ service cloud.firestore {
     match /products/{productId} {
       function validProduct() {
         let d = request.resource.data;
-        return d.keys().hasOnly(['title', 'text', 'media', 'category', 'price', 'year', 'km', 'fuel',
+        return d.keys().hasOnly(['title', 'text', 'media', 'category', 'price', 'depositRate', 'year', 'km', 'fuel',
                                  'credit', 'fromJapan', 'sold', 'createdAt', 'updatedAt', 'notifiedAt'])
           && validCommon(d, 0)
           && d.category in ['SUV', 'Berline', 'Pick-up', 'Moto']
           && d.price is number && d.price > 0
+          && d.depositRate in [60, 70]
           && (d.year == null || d.year is number)
           && (d.km == null || (d.km is number && d.km >= 0))
           && d.fuel is string && d.fuel.size() <= 30
@@ -89,15 +90,17 @@ service cloud.firestore {
     match /orders/{orderId} {
       function validOrder() {
         let d = request.resource.data;
-        return d.keys().hasOnly(['vehicle', 'price', 'deposit', 'name', 'phone', 'city', 'mode', 'payment', 'note', 'uid', 'status', 'createdAt'])
+        return d.keys().hasOnly(['vehicle', 'price', 'depositRate', 'deposit', 'name', 'phone', 'city', 'agency', 'mode', 'payment', 'note', 'uid', 'status', 'createdAt'])
           && d.vehicle is string && d.vehicle.size() > 0 && d.vehicle.size() <= 150
           && d.price is number && d.price > 0
+          && d.depositRate is number && d.depositRate >= 0 && d.depositRate <= 100
           && d.deposit is number && d.deposit >= 0 && d.deposit <= d.price
+          && d.agency in ['Butembo', 'Beni']
           && d.name is string && d.name.size() >= 2 && d.name.size() <= 100
           && d.phone is string && d.phone.size() >= 6 && d.phone.size() <= 30
           && d.city is string && d.city.size() <= 60
           && d.mode in ['comptant', 'credit']
-          && d.payment in ['mobile-money', 'agence']
+          && d.payment in ['airtel-money', 'orange-money', 'm-pesa', 'virement']
           && d.note is string && d.note.size() <= 1000;
       }
 

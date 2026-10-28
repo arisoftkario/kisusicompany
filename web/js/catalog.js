@@ -22,6 +22,7 @@ async function load() {
       km: p.km ?? 0,
       fuel: p.fuel ?? '',
       price: p.price ?? 0,
+      depositRate: p.depositRate ?? 60,
       credit: p.credit !== false,
       fromJapan: p.fromJapan === true,
       sold: p.sold === true,

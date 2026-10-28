@@ -40,8 +40,9 @@ Mise en service : voir **[FIREBASE.md](FIREBASE.md)**.
 ## Réservation en ligne
 
 Bouton « Réserver en ligne » sur chaque véhicule du catalogue (`web/js/orders.js`) :
-le client choisit comptant/crédit et le paiement de l'acompte (Mobile Money ou agence).
-Acompte : constante `DEPOSIT_RATE` (10 %). Les réservations s'affichent dans `admin.html`
+le client choisit son agence (Butembo ou Beni), comptant/crédit et le paiement de l'avance
+(Airtel Money, Orange Money, M-Pesa, virement bancaire). Le pourcentage d'avance (60 ou 70 %)
+est fixé pour chaque produit dans l'espace admin ; véhicules d'exemple : `defaultAdvanceRate`. Les réservations s'affichent dans `admin.html`
 (statut, appel, WhatsApp) ; sans Firebase, elles sont envoyées sur WhatsApp.
 
 ## Application installable (raccourci)

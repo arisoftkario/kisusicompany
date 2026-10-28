@@ -7,6 +7,10 @@ import 'package:web/web.dart' as web;
 /// Numéro WhatsApp de KISUSI COMPANY (format international, sans "+").
 const whatsappNumber = '243980957817';
 
+/// Pourcentage d'avance des véhicules d'exemple (les produits publiés ont
+/// le leur, fixé dans l'espace administrateur : 60 ou 70 %).
+const defaultAdvanceRate = 60;
+
 /// Taux d'intérêt mensuel utilisé par le simulateur de crédit (0.015 = 1,5 %).
 /// À ajuster selon les conditions réelles de l'entreprise.
 const tauxMensuelCredit = 0.015;
@@ -118,6 +122,9 @@ class Vehicle {
   final bool sold;
   final String description;
 
+  /// Pourcentage du prix demandé en avance à la réservation.
+  final int advanceRate;
+
   /// Photos supplémentaires (adresses complètes), après [image].
   final List<String> photos;
 
@@ -135,6 +142,7 @@ class Vehicle {
     this.fromJapan = true,
     this.sold = false,
     this.description = '',
+    this.advanceRate = defaultAdvanceRate,
     this.photos = const [],
   });
 
@@ -161,8 +169,12 @@ class Vehicle {
       fromJapan: flag('fromJapan'),
       sold: flag('sold'),
       description: text('description'),
+      advanceRate: number('depositRate'),
     );
   }
+
+  /// Montant de l'avance demandée à la réservation.
+  int get advance => (price * advanceRate / 100).round();
 }
 
 /// Catalogue affiché : exemples, ou produits publiés.
@@ -338,13 +350,13 @@ void _renderCatalog() {
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fuel"/></svg>${_escape(v.fuel)}</li>
     </ul>
     <div class="card__foot">
-      <div class="card__price"><small>Prix</small><strong>${_usd(v.price)}</strong></div>
+      <div class="card__price"><small>Prix</small><strong>${_usd(v.price)}</strong>${v.sold ? '' : '<span class="card__advance">Avance ${v.advanceRate} % : ${_usd(v.advance)}</span>'}</div>
       <div class="card__actions">
         ${v.credit && !v.sold ? '<button type="button" class="icon-btn" data-simulate="$index" title="Simuler un crédit" aria-label="Simuler un crédit pour ${_escape(v.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg></button>' : ''}
         <a class="icon-btn icon-btn--wa" href="${_whatsappLink(message)}" target="_blank" rel="noopener" title="Commander sur WhatsApp" aria-label="Commander ${_escape(v.name)} sur WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-whatsapp"/></svg></a>
       </div>
     </div>
-    ${v.sold ? '' : '<button type="button" class="btn btn--red btn--sm btn--block card__order" data-order="${_escape(v.name)}" data-year="${v.year}" data-price="${v.price}" data-credit="${v.credit}">Réserver en ligne</button>'}
+    ${v.sold ? '' : '<button type="button" class="btn btn--red btn--sm btn--block card__order" data-order="${_escape(v.name)}" data-year="${v.year}" data-price="${v.price}" data-deposit="${v.advance}" data-credit="${v.credit}">Réserver en ligne</button>'}
   </div>
 </article>''');
   }

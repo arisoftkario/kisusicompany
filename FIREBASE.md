@@ -81,8 +81,9 @@ variables d'environnement ajoutées).
   « Admin » dans le menu du site), connectez-vous, choisissez le type :
   - **Publication marketing** : texte + jusqu'à 6 photos, ou une vidéo (100 Mo
     maximum, de préférence MP4 en 720p) → section « Actualités » ;
-  - **Produit en vente** : nom, prix, catégorie, photos… → « Catalogue », avec
-    le bouton « Réserver en ligne ». Cochez « Vendu » une fois le véhicule vendu.
+  - **Produit en vente** : nom, prix total, pourcentage d'avance (60 ou 70 %),
+    catégorie, photos… → « Catalogue », avec le bouton « Réserver en ligne ».
+    Cochez « Vendu » une fois le véhicule vendu.
   La case « Envoyer une notification aux abonnés » prévient tous ceux qui suivent les actus.
 - **Modifier / Supprimer** : boutons à côté de chaque publication.
 - **Réservations** : les réservations faites depuis le catalogue apparaissent en haut

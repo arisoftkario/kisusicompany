@@ -42,7 +42,11 @@ async function start() {
   $('#reset-password').addEventListener('click', resetPassword);
   $('#logout').addEventListener('click', () => A.signOut(auth));
   $('#post-form').addEventListener('submit', savePost);
-  $('#post-form').addEventListener('input', (e) => e.target.classList.remove('is-invalid'));
+  $('#post-form').addEventListener('input', (e) => {
+    e.target.classList.remove('is-invalid');
+    if (e.target.id === 'post-price') showDeposit();
+  });
+  $('#post-form').addEventListener('change', (e) => e.target.name === 'rate' && showDeposit());
   $('#post-cancel').addEventListener('click', () => resetForm());
   document.querySelectorAll('[name=type]').forEach((r) => r.addEventListener('change', () => applyType(currentType())));
   $('#add-photos').addEventListener('change', (e) => {
@@ -167,7 +171,7 @@ function renderList() {
     const photo = (p.media ?? []).find((m) => m.kind === 'image');
     const hasVideo = (p.media ?? []).some((m) => m.kind === 'video');
     const details = p.type === 'produit'
-      ? [dateFr(p.createdAt), usd(p.price), p.sold && 'VENDU']
+      ? [dateFr(p.createdAt), usd(p.price), `avance ${p.depositRate ?? 60} %`, p.sold && 'VENDU']
       : [dateFr(p.createdAt), hasVideo && 'vidéo', `${p.likes} j'aime`];
     const editBtn = el('button', { type: 'button', class: 'btn btn--outline btn--sm', text: 'Modifier' });
     const deleteBtn = el('button', { type: 'button', class: 'btn btn--sm admin__danger', text: 'Supprimer' });
@@ -197,7 +201,12 @@ const STATUSES = {
   annulee: 'Annulée',
 };
 const MODES = { comptant: 'Comptant', credit: 'À crédit' };
-const PAYMENTS = { 'mobile-money': 'Mobile Money', agence: "À l'agence" };
+const PAYMENTS = {
+  'airtel-money': 'Airtel Money',
+  'orange-money': 'Orange Money',
+  'm-pesa': 'M-Pesa',
+  virement: 'Virement bancaire',
+};
 
 /// Numéro au format WhatsApp : 0997… → 243997…
 const waNumber = (phone) => phone.replace(/\D/g, '').replace(/^0/, '243');
@@ -229,8 +238,8 @@ function renderOrders(orders) {
     return el('article', { class: `admin-order is-${o.status}` },
       el('div', {},
         el('h3', { text: `${o.vehicle} — n° ${o.id.slice(0, 6).toUpperCase()}` }),
-        el('p', { text: [o.name, o.phone, o.city, dateFr(o.createdAt)].join(' · ') }),
-        el('p', { text: `Acompte ${usd(o.deposit)} sur ${usd(o.price)} · ${MODES[o.mode] ?? o.mode} · ${PAYMENTS[o.payment] ?? o.payment}` }),
+        el('p', { text: [`Agence ${o.agency}`, o.name, o.phone, o.city, dateFr(o.createdAt)].join(' · ') }),
+        el('p', { text: `Avance ${o.depositRate} % : ${usd(o.deposit)} sur ${usd(o.price)} · ${MODES[o.mode] ?? o.mode} · ${PAYMENTS[o.payment] ?? o.payment}` }),
         o.note && el('p', { class: 'admin-order__note', text: `« ${o.note} »` })),
       el('div', { class: 'admin-order__actions' },
         status,
@@ -265,6 +274,15 @@ async function setStatus(order, select) {
 // ---------------------------------------------------------------------------
 
 const currentType = () => document.querySelector('[name=type]:checked').value;
+
+const currentRate = () => Number(document.querySelector('[name=rate]:checked').value);
+
+/// « Avance : 16 500 $ · reste 11 000 $ » sous le choix du pourcentage.
+function showDeposit() {
+  const price = Number($('#post-price').value);
+  const deposit = Math.round((price * currentRate()) / 100);
+  $('#deposit-pct').textContent = price > 0 ? `Avance : ${usd(deposit)} · reste à la livraison : ${usd(price - deposit)}` : '';
+}
 
 /// Affiche les champs du type choisi (marketing ou produit).
 function applyType(type) {
@@ -324,6 +342,7 @@ function resetForm() {
   editing = null;
   media = [];
   $('#post-form').reset();
+  $('#deposit-pct').textContent = '';
   document.querySelectorAll('[name=type]').forEach((r) => (r.disabled = false));
   applyType('contenu');
   $('#form-title').textContent = 'Nouvelle publication';
@@ -345,6 +364,7 @@ function editPost(p) {
   if (p.type === 'produit') {
     $('#post-category').value = p.category;
     $('#post-price').value = p.price ?? '';
+    document.querySelectorAll('[name=rate]').forEach((r) => (r.checked = Number(r.value) === (p.depositRate ?? 60)));
     $('#post-year').value = p.year ?? '';
     $('#post-km').value = p.km ?? '';
     $('#post-fuel').value = p.fuel || 'Essence';
@@ -357,6 +377,7 @@ function editPost(p) {
   $('#post-cancel').hidden = false;
   $('#notify-row').hidden = true;
   message('#form-msg', '');
+  showDeposit();
   $('#post-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -462,6 +483,7 @@ async function savePost(e) {
       Object.assign(data, {
         category: $('#post-category').value,
         price,
+        depositRate: currentRate(),
         year: numberOrNull($('#post-year').value),
         km: numberOrNull($('#post-km').value),
         fuel: $('#post-fuel').value,
